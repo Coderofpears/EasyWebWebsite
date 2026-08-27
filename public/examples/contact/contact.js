@@ -14,14 +14,21 @@ form.addEventListener("submit", async (event) => {
   statusLine.textContent = "Sending your signal...";
 
   try {
-    const response = await fetch("/submit", {
+    const isLocalServer = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const response = await fetch(isLocalServer ? "/submit" : "/", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(payload),
+      headers: isLocalServer
+        ? { "Content-Type": "application/json", Accept: "application/json" }
+        : { "Content-Type": "application/x-www-form-urlencoded" },
+      body: isLocalServer
+        ? JSON.stringify(payload)
+        : new URLSearchParams(new FormData(form)).toString(),
     });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message || "The server did not accept the submission.");
-    statusLine.textContent = `Saved at ${result.timestamp}. Thanks for reaching out.`;
+    if (!response.ok) throw new Error("The server did not accept the submission.");
+    const result = isLocalServer ? await response.json() : null;
+    statusLine.textContent = result
+      ? `Saved at ${result.timestamp}. Thanks for reaching out.`
+      : "Thanks for reaching out. Your signal is on its way.";
     form.reset();
   } catch (error) {
     statusLine.className = "form-status error";

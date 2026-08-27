@@ -9,10 +9,11 @@ from __future__ import annotations
 import io
 import runpy
 from contextlib import redirect_stdout
+from datetime import datetime, timezone
 from pathlib import Path
 from threading import Lock
 
-from flask import Flask, Response, abort, redirect, request, send_from_directory, url_for
+from flask import Flask, Response, abort, jsonify, redirect, request, send_from_directory, url_for
 from werkzeug.utils import safe_join
 
 # Server port
@@ -53,6 +54,17 @@ def index() -> Response:
         return send_from_directory(str(PUBLIC_DIR), "index.html")
 
     return Response(FALLBACK_HTML, mimetype="text/html")
+
+
+@app.post("/submit")
+def submit() -> Response:
+    """Accept the local contact example's JSON submission."""
+
+    request.get_json(silent=True)
+    return jsonify(
+        message="Submission received.",
+        timestamp=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    )
 
 
 @app.get("/<path:requested_path>")
