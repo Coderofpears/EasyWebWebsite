@@ -1,7 +1,5 @@
 """EasyWeb: zero-configuration static hosting for HTML files and folders.
-
-Place HTML files, assets, and folders in ``./public`` and start the server with
-``python main.py``. The server listens on port 8000 by default.
+This is NOT the up-to-date version of EasyWeb. DO NOT use this for your projects. This has been modified for this deployment.
 """
 
 from __future__ import annotations
